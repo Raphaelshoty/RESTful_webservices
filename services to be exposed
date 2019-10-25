@@ -1,0 +1,13 @@
+#Restful web services
+
+-- retrieve all users GET/users
+-- create a user   POST/users
+-- retrieve a user GET/users/{userId}
+-- delete a user DELETE/users/{userId}
+-- update a user(replace) PUT/users/{userId}
+-- update a user(modify) PATCH/users/{usersId} 
+
+
+-- retrieve all posts for a user GET/users/{userId}/posts
+-- create a post for a user POST/users/{userId}/posts
+-- retrieve details of a post GET/users/{userId}/posts/{postId}
