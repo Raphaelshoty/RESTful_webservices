@@ -2,10 +2,17 @@ package com.webServices.rest.restFulWebServices.user;
 
 import java.util.Date;
 
+import javax.validation.constraints.Past;
+import javax.validation.constraints.Size;
+
 public class User {
 	
 	private Integer id;
+	
+	@Size(min = 2,message = "Name should have at least 2 characters") // validation to be performed over this property and its error message
 	private String name;
+	
+	@Past(message = "future dates are not allowed") // validation to be performed over this property and its error message
 	private Date birthdate;
 	
 	public User() {}
