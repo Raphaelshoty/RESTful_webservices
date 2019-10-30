@@ -3,7 +3,10 @@ package com.webServices.rest.restFulWebServices.user;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
@@ -22,6 +25,10 @@ public class UserDaoService {
 		} catch (ParseException e) {			
 			e.printStackTrace();
 		}		
+	}
+	
+	public static List<User> getUsers() {
+		return users;
 	}
 	
 	// findAll()
@@ -47,5 +54,19 @@ public class UserDaoService {
 		users.add(user);
 		return user;
 	}
+
+	public User deleteById(Integer id) {
+		Iterator<User> iterator = users.iterator();
+		while(iterator.hasNext()) {
+			User user = iterator.next();
+			if(user.getId() == id) {
+				iterator.remove();
+				return user;
+			}
+		}
+		return null;
+		
+	}
+	
 	
 }
