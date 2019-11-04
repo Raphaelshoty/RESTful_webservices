@@ -4,6 +4,8 @@ import java.net.URI;
 import java.util.List;
 import java.util.Objects;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -33,7 +35,7 @@ public class PostResource {
 	} 
 	
 	@PostMapping(path = "/users/{id}/posts")
-	public ResponseEntity<Object> save(@RequestBody Post post) {
+	public ResponseEntity<Object> save(@Valid @RequestBody Post post) {
 		service.save(post);
 		URI location = ServletUriComponentsBuilder
 				.fromCurrentRequest()
