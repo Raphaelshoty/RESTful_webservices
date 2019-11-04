@@ -4,6 +4,8 @@ import java.net.URI;
 import java.util.List;
 import java.util.Objects;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.webServices.rest.restFulWebServices.exception.UserCreationException;
 import com.webServices.rest.restFulWebServices.exception.UsersNotFoundException;
 
 @RestController
@@ -43,9 +46,10 @@ public class UserResource {
 	//input - details of user
 	//output - CREATED - return the created URI
 	@PostMapping(path = "/users")
-	public ResponseEntity<Object> save(@RequestBody User user) {
+	public ResponseEntity<Object> save(@Valid @RequestBody User user) { // the @Valid is a annotation to validate the value passed as parameter on this resource 
 		User us = service.save(user);
-		//CREATED 
+			
+		//CREATED 	
 		URI location = ServletUriComponentsBuilder
 		.fromCurrentRequest()
 		.path("/{id}")
