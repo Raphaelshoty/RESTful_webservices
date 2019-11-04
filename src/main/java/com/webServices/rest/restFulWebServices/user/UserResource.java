@@ -7,6 +7,8 @@ import java.util.Objects;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,8 +18,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.webServices.rest.restFulWebServices.exception.UserCreationException;
-import com.webServices.rest.restFulWebServices.exception.UsersNotFoundException;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
+
+import com.webServices.rest.restFulWebServices.exception.UsersNotFoundException; // static import for linkto methods
 
 @RestController
 public class UserResource {
@@ -30,17 +33,27 @@ public class UserResource {
 		List<User> users = service.findAll();
 		if(Objects.isNull(users)) {
 			throw new UsersNotFoundException("No users found at this resource");
-		}
+		}	
+		
 		return users;
 	}
 	
 	@GetMapping(path = "/users/{id}")
-	public User findOne(@PathVariable int id) {
+	public EntityModel<User> findOne(@PathVariable int id) {
 		User user = service.findOne(id);
 		if(Objects.isNull(user)) {
 			throw new UserNotFoundException("id-"+id); // in this not found exception i configured an specific response code  
 		}
-		return user;
+		
+		//HATEOAS
+		//all-users, SERVER_PATH+"/users"
+		//findAll
+		EntityModel<User> resource = new EntityModel<>(user);
+		WebMvcLinkBuilder linkToFindAll = linkTo(methodOn(this.getClass()).findAll());		
+		resource.add(linkToFindAll.withRel("all-users"));
+		//HATEOAS
+		
+		return resource;
 	}
 	
 	//input - details of user
