@@ -7,8 +7,6 @@ import java.util.Objects;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,8 +15,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 import com.webServices.rest.restFulWebServices.exception.UsersNotFoundException; // static import for linkto methods
 
@@ -38,22 +34,32 @@ public class UserResource {
 		return users;
 	}
 	
+	// here below is an example of use of hateoas
+//	@GetMapping(path = "/users/{id}")
+//	public EntityModel<User> findOne(@PathVariable int id) {
+//		User user = service.findOne(id);
+//		if(Objects.isNull(user)) {
+//			throw new UserNotFoundException("id-"+id); // in this not found exception i configured an specific response code  
+//		}
+//		
+//		//HATEOAS
+//		//all-users, SERVER_PATH+"/users"
+//		//findAll
+//		EntityModel<User> resource = new EntityModel<>(user);
+//		WebMvcLinkBuilder linkToFindAll = linkTo(methodOn(this.getClass()).findAll());		
+//		resource.add(linkToFindAll.withRel("all-users"));
+//		//HATEOAS
+//		
+//		return resource;
+//	}
+	
 	@GetMapping(path = "/users/{id}")
-	public EntityModel<User> findOne(@PathVariable int id) {
+	public User findOne(@PathVariable int id) {
 		User user = service.findOne(id);
 		if(Objects.isNull(user)) {
 			throw new UserNotFoundException("id-"+id); // in this not found exception i configured an specific response code  
 		}
-		
-		//HATEOAS
-		//all-users, SERVER_PATH+"/users"
-		//findAll
-		EntityModel<User> resource = new EntityModel<>(user);
-		WebMvcLinkBuilder linkToFindAll = linkTo(methodOn(this.getClass()).findAll());		
-		resource.add(linkToFindAll.withRel("all-users"));
-		//HATEOAS
-		
-		return resource;
+		return user;
 	}
 	
 	//input - details of user
