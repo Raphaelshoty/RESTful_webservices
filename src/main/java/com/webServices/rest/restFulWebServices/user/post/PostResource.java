@@ -27,19 +27,19 @@ public class PostResource {
 	
 	private PostDaoService service = new PostDaoService();
 	
-//	@GetMapping(path = "/users/{id}/posts")
-//	public List<Post> findAll(@PathVariable Integer id) {
-//		return service.findAllByUser(id);
-//	}
+	@GetMapping(path = "/users/{id}/posts")
+	public List<Post> findAll(@PathVariable Integer id) {
+		return service.findAllByUser(id);
+	}
 	
 	
 	//using filtering on the mapping dynamically 
-	@GetMapping(path = "/users/{id}/posts")
+	@GetMapping(path = "/users/{id}/posts", headers = "filtered-version")
 	public MappingJacksonValue findAllFiltered(@PathVariable Integer id) {
 		
 		List<Post> posts = service.findAllByUser(id);
 		
-		SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter.filterOutAllExcept("postDate","message","user","id"); // saying what i whant to show on my response
+		SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter.filterOutAllExcept("postDate","message","user","id"); // saying what i want to show on my response
 		
 		FilterProvider filterProvider = new SimpleFilterProvider().addFilter("PostsFilter", filter); // here i specify the filter provider name and add the filters to be applied
 		
@@ -61,6 +61,25 @@ public class PostResource {
 //		
 //		return resource;
 //	}
+	
+	@GetMapping(path = "/users/{userId}/posts/{postId}", headers = "filtered-version")
+	public MappingJacksonValue findOneFiltered(@PathVariable int userId, @PathVariable int postId) {
+		
+		Post post = service.findPostByUser(userId, postId);
+		if(Objects.isNull(post)) {
+			throw new PostNotFoundException("post id - "+postId+"Not Found"); // in this not found exception i configured an specific response code  
+		}
+			
+			SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter.filterOutAllExcept("postDate","message","id"); // saying what i want to show on my response
+			
+			FilterProvider filterProvider = new SimpleFilterProvider().addFilter("PostsFilter", filter); // here i specify the filter provider name and add the filters to be applied
+			
+			MappingJacksonValue mappedValues = new MappingJacksonValue(post);	// here i input the entity to be filtered out on its properties 
+			mappedValues.setFilters(filterProvider); // here i set the filter provider to apply the filter rules
+			
+			return mappedValues;			
+		
+	} 
 	
 	@GetMapping(path = "/users/{userId}/posts/{postId}")
 	public Post findOne(@PathVariable int userId, @PathVariable int postId) {
