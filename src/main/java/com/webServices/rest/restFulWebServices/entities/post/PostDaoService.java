@@ -1,4 +1,4 @@
-package com.webServices.rest.restFulWebServices.user.post;
+package com.webServices.rest.restFulWebServices.entities.post;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
-import com.webServices.rest.restFulWebServices.user.UserDaoService;
+import com.webServices.rest.restFulWebServices.entities.user.UserDaoService;
 
 
 public class PostDaoService extends UserDaoService{
