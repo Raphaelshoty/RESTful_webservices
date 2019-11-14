@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import com.webServices.rest.restFulWebServices.user.UserNotFoundException;
+import com.webServices.rest.restFulWebServices.entities.user.UserNotFoundException;
 
 
 @ControllerAdvice // this annotation tells that this controller will be consumed across the requests on project, this annotation has precedence over the other response @ResponseStatus on exception classes

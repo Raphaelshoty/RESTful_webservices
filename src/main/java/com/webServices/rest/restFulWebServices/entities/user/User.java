@@ -1,25 +1,45 @@
-package com.webServices.rest.restFulWebServices.user;
+package com.webServices.rest.restFulWebServices.entities.user;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Size;
+import com.webServices.rest.restFulWebServices.entities.post.*;;
 
 //import io.swagger.annotations.ApiModel;
 //import io.swagger.annotations.ApiModelProperty;
 
 //@ApiModel(description = "Users information") // info to be displayed at swagger documentation about this model
+@Entity
+@Table(name="User")
 public class User {
 	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	
+	@Column(name = "name")
 	@Size(min = 2,message = "Name should have at least 2 characters") // validation to be performed over this property and its error message
 	//@ApiModelProperty(notes = "The name should have ate least 2 characters") // information to be displayed at the api configuration - swagger, to say a rule about this property
 	private String name;
 	
+	@Column(name = "birthDate", nullable = false)
 	@Past(message = "future dates are not allowed") // validation to be performed over this property and its error message
 	//@ApiModelProperty(notes = "the date need to be in past") // information to be displayed at the api configuration - swagger, to say a rule about this property
 	private Date birthdate;
+	
+	@OneToMany(fetch = FetchType.LAZY,mappedBy = "user")
+	private Set<Post> posts = new HashSet<>();
 	
 	public User() {}
 			

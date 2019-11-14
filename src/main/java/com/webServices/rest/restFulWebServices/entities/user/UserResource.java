@@ -1,4 +1,4 @@
-package com.webServices.rest.restFulWebServices.user;
+package com.webServices.rest.restFulWebServices.entities.user;
 
 import java.net.URI;
 import java.util.List;
