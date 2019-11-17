@@ -132,7 +132,7 @@ public class PostJpaResource {
 	}
 	
 	@PutMapping(path = "/jpa/users/{userId}/posts/{postId}")
-	public ResponseEntity<Object> updateUserPost(@PathVariable Integer userId, @PathVariable Integer postId, @Valid @RequestBody Post post){
+	public ResponseEntity<Object> updateUserPost(@PathVariable Integer userId, @PathVariable Integer postId, @RequestBody Post post){
 		
 		Optional<User> user = userService.findById(userId);
 		if(user.isPresent()) {
@@ -140,10 +140,8 @@ public class PostJpaResource {
 			Post updatePost =  posts.stream().filter(pst -> pst.getId().equals(postId)).findFirst().orElse(null);
 			if(Objects.nonNull(post.getMessage())) {
 				updatePost.setMessage(post.getMessage());
-			}
-			
-			updatePost.setPostDate(post.getPostDate());
-			updatePost.setUser(user.get());
+			}			
+			updatePost.setPostDate(post.getPostDate());			
 			service.save(updatePost);
 			
 			URI location = ServletUriComponentsBuilder

@@ -9,6 +9,7 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +19,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.fasterxml.jackson.databind.ser.FilterProvider;
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import com.webServices.rest.restFulWebServices.entities.post.Post;
 import com.webServices.rest.restFulWebServices.exception.UsersNotFoundException; // static import for linkto methods
 
 @RestController
@@ -27,12 +32,14 @@ public class UserJpaResource {
 	private UserRepository service;
 
 	@GetMapping(path = "/jpa/users")
-	public List<User> findAll(){
+	public MappingJacksonValue findAll(){
 		List<User> users = service.findAll();
 		if(Objects.isNull(users)) {
 			throw new UsersNotFoundException("No users found at this resource");
 		}			
-		return users;
+		
+		return userFilter(users);
+		
 	}
 	
 	// here below is an example of use of hateoas
@@ -55,12 +62,14 @@ public class UserJpaResource {
 //	}
 	
 	@GetMapping(path = "/jpa/users/{id}")
-	public User findOne(@PathVariable int id) {
+	public MappingJacksonValue findOne(@PathVariable int id) {
 		Optional<User> user = service.findById(id);
 		if(!user.isPresent()) {
 			throw new UserNotFoundException("id-"+id); // in this not found exception i configured an specific response code  
 		}
-		return user.get();
+		
+		return userFilter(user.get());		
+		
 	}
 	
 	//input - details of user
@@ -70,10 +79,11 @@ public class UserJpaResource {
 		User us = service.save(user);
 			
 		//CREATED 	
+		// this step get the new resource id and assign it to the parameter path {id}
 		URI location = ServletUriComponentsBuilder
 		.fromCurrentRequest()
 		.path("/{id}")
-		.buildAndExpand(us.getId())
+		.buildAndExpand(us.getId()) 
 		.toUri();
 		
 		return ResponseEntity.created(location).build();// telling that the resource has been created with response code will be 201
@@ -83,18 +93,40 @@ public class UserJpaResource {
 	public void deleteUser(@PathVariable Integer id) {
 		Optional<User> userFound = service.findById(id);					
 		if(!userFound.isPresent()) {
-			throw new UserNotFoundException("User id = "+id+" Not found");
+			throw new UserNotFoundException("User id = "+id+" Not found, cannot proceed with delete action");
 		}	
 		service.deleteById(id);
 	}
 	
 	@PutMapping(path = "/jpa/users/{id}")
-	public void updateUser(@PathVariable Integer id) {
+	public void updateUser(@PathVariable Integer id,@RequestBody User updatedUser) {
 		Optional<User> user = service.findById(id);
 		if(!user.isPresent()) {
 			throw new UserNotFoundException("User id = "+id+" Not found");
 		}
+		user.get().setBirthdate(updatedUser.getBirthdate());
+		user.get().setName(updatedUser.getName());		
 		service.save(user.get());
 	}
+	
+	private MappingJacksonValue userFilter(User user) {
+		SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter.filterOutAllExcept("name","birthdate","id"); // saying what i want to show on my response
+		
+		FilterProvider filterProvider = new SimpleFilterProvider().addFilter("UserFilter", filter); // here i specify the filter provider name and add the filters to be applied
+		
+		MappingJacksonValue mappedValues = new MappingJacksonValue(user);	// here i input the entity to be filtered out on its properties 
+		mappedValues.setFilters(filterProvider); // here i set the filter provider to apply the filter rules
+		return mappedValues;
+	} 
+	
+	private MappingJacksonValue userFilter(List<User> user) {
+		SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter.filterOutAllExcept("name","birthdate","id"); // saying what i want to show on my response
+		
+		FilterProvider filterProvider = new SimpleFilterProvider().addFilter("UserFilter", filter); // here i specify the filter provider name and add the filters to be applied
+		
+		MappingJacksonValue mappedValues = new MappingJacksonValue(user);	// here i input the entity to be filtered out on its properties 
+		mappedValues.setFilters(filterProvider); // here i set the filter provider to apply the filter rules
+		return mappedValues;
+	} 
 	
 }
