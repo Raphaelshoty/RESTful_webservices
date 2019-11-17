@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -38,7 +39,7 @@ public class User {
 	//@ApiModelProperty(notes = "the date need to be in past") // information to be displayed at the api configuration - swagger, to say a rule about this property
 	private Date birthdate;
 	
-	@OneToMany(fetch = FetchType.LAZY,mappedBy = "user")
+	@OneToMany(fetch = FetchType.LAZY,mappedBy = "user",cascade = CascadeType.ALL)
 	private Set<Post> posts = new HashSet<>();
 	
 	public User() {}
@@ -67,6 +68,14 @@ public class User {
 	}
 	public void setBirthdate(Date birthdate) {
 		this.birthdate = birthdate;
+	}	
+
+	public Set<Post> getPosts() {
+		return posts;
+	}
+
+	public void setPosts(Set<Post> posts) {
+		this.posts = posts;
 	}
 
 	@Override
